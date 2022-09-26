@@ -1,6 +1,6 @@
 ﻿namespace Mana.Models;
 
-public class SearchQuery
+public static class SearchQuery
 {
     public static string BuildQuery(DateTime from, DateTime to, int count = 100)
     {

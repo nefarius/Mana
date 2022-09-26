@@ -8,10 +8,10 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
 
-<MudDataGrid T="LogEntry" Items="@Elements" Filterable="true" ReadOnly="true">
+<MudDataGrid T="LogEntry" Items="@Elements" Filterable="true" ReadOnly="true" Dense="true">
 	<Columns>
-		<Column T="LogEntry" Field="Timestamp" Title="Timestamp"/>
-		<Column T="LogEntry" Field="LoggerName" Title="Logger Name"/>
+		<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
+		<Column T="LogEntry" Field="LoggerName" Title="Logger"/>
 		<Column T="LogEntry" Field="Level" Title="Level"/>
 		<Column T="LogEntry" Field="Message" Title="Message"/>
 	</Columns>
