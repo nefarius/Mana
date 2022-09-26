@@ -2,13 +2,13 @@
 @using Flurl.Http
 @using Mana.Models
 @using Microsoft.Extensions.Options
-@inject IOptions<ManaConfiguration> _config
+@inject IOptions<ManaConfiguration> Config
 
 <PageTitle>Logtrail</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
 
-<MudDataGrid T="LogEntry" Items="@Elements" Filterable="true" ReadOnly="true" Dense="true">
+<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true">
 	<Columns>
 		<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
 		<Column T="LogEntry" Field="LoggerName" Title="Logger"/>
@@ -19,7 +19,7 @@
 
 
 @code {
-	private IEnumerable<LogEntry> Elements = new List<LogEntry>();
+	private IEnumerable<LogEntry> _elements = new List<LogEntry>();
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -27,13 +27,13 @@
 
 		var query = SearchQuery.BuildQuery(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow);
 
-		var url = new Uri(new Uri(_config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
+		var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
 		var result = await url
-			.WithBasicAuth(_config.Value.Username, _config.Value.Password)
+			.WithBasicAuth(Config.Value.Username, Config.Value.Password)
 			.PostStringAsync(query)
 			.ReceiveJson<SearchResult>();
 			
-		Elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+		_elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
 	}
 }
