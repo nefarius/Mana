@@ -1,0 +1,39 @@
+﻿@page "/logtrail"
+@using Flurl.Http
+@using Mana.Models
+@using Microsoft.Extensions.Options
+@inject IOptions<ManaConfiguration> _config
+
+<PageTitle>Logtrail</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
+
+<MudDataGrid T="LogEntry" Items="@Elements" Filterable="true" ReadOnly="true">
+	<Columns>
+		<Column T="LogEntry" Field="Timestamp" Title="Timestamp"/>
+		<Column T="LogEntry" Field="LoggerName" Title="Logger Name"/>
+		<Column T="LogEntry" Field="Level" Title="Level"/>
+		<Column T="LogEntry" Field="Message" Title="Message"/>
+	</Columns>
+</MudDataGrid>
+
+
+@code {
+	private IEnumerable<LogEntry> Elements = new List<LogEntry>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		var query = SearchQuery.BuildQuery(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow);
+
+		var url = new Uri(new Uri(_config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
+
+		var result = await url
+			.WithBasicAuth(_config.Value.Username, _config.Value.Password)
+			.PostStringAsync(query)
+			.ReceiveJson<SearchResult>();
+			
+		Elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+	}
+}

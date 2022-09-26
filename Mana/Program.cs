@@ -1,4 +1,4 @@
-using Mana.Data;
+using Mana.Models;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using MudBlazor.Services;
 
@@ -9,8 +9,9 @@ StaticWebAssetsLoader.UseStaticWebAssets(builder.Environment, builder.Configurat
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
 builder.Services.AddMudServices();
+
+builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetSection("Mana"));
 
 var app = builder.Build();
 
