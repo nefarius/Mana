@@ -26,7 +26,7 @@ services:
 
   # https://docs.zincsearch.com/ingestion/fluent-bit/
   fluent-bit:
-    image: fluent/fluent-bit:1.8
+    image: fluent/fluent-bit:1.9
     container_name: fluent-bit
     command:
       - /fluent-bit/bin/fluent-bit
@@ -48,20 +48,17 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # TODO: replace
-  kibana:
-    image: yashlogic/amazon-opendistro-for-elasticsearch-kibana-logtrail:1.3.0
-    container_name: kibana
+  # https://github.com/nefarius/Mana
+  mana:
+    image: nefarius.azurecr.io/mana:latest
+    container_name: mana
     restart: always
     ports:
-      - 5601:5601
-    expose:
-      - "5601"
+      - 5601:80
     environment:
-      - ELASTICSEARCH_URL=http://zinc:4080/es
-      - ELASTICSEARCH_HOSTS=http://zinc:4080/es
-      - SERVER_BASEPATH=/kibana
-      - SERVER_REWRITEBASEPATH=true
+      - Mana__ServerUrl=http://zinc:4080/
+      - Mana__Username=admin
+      - Mana__Password=admin
     networks:
       - web
       - elastic
@@ -71,7 +68,7 @@ services:
       - traefik.http.routers.kibana.entrypoints=web-secure
       - traefik.http.routers.kibana.tls=true
       - traefik.http.routers.kibana.tls.certresolver=le
-      - traefik.http.services.kibana.loadbalancer.server.port=5601
+      - traefik.http.services.kibana.loadbalancer.server.port=80
     logging:
       options:
         max-size: "10m"
