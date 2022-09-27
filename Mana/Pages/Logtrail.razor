@@ -65,7 +65,7 @@
 			{
 				var now = DateTime.Now;
 
-				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:false);
+				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:true);
 
 				var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
