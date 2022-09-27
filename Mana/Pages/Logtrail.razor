@@ -52,7 +52,8 @@
 	private readonly TerminalOptions _options = new()
 		{
 			CursorBlink = true,
-			CursorStyle = CursorStyle.Bar
+			CursorStyle = CursorStyle.Bar,
+			Rows = 38
 		};
 
 	private async Task OnFirstRender()
@@ -65,7 +66,7 @@
 			{
 				var now = DateTime.Now;
 
-				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:true);
+				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:false);
 
 				var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
