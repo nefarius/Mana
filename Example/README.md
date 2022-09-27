@@ -7,5 +7,6 @@ Lightweight Docker Logging stack
       driver: "fluentd"
       options:
         fluentd-address: 127.0.0.1:24224
+        fluentd-sub-second-precision: true
         tag: container-name
 ```

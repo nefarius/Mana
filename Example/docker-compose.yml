@@ -64,7 +64,7 @@ services:
       - elastic
     labels:
       - traefik.enable=true
-      - traefik.http.routers.kibana.rule=Host(`logs.example.org`) && PathPrefix(`/kibana`)
+      - traefik.http.routers.kibana.rule=Host(`logs.example.org`)
       - traefik.http.routers.kibana.entrypoints=web-secure
       - traefik.http.routers.kibana.tls=true
       - traefik.http.routers.kibana.tls.certresolver=le
