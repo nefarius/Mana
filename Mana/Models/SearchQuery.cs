@@ -2,10 +2,12 @@
 
 public static class SearchQuery
 {
-    public static string BuildQuery(DateTime? from, DateTime? to, int count = 100)
+    public static string BuildQuery(DateTime? from, DateTime? to, int count = 100, bool newestFirst = true)
     {
         if (!from.HasValue || !to.HasValue)
             throw new ArgumentNullException("Both start and end times must be provided.");
+
+        var sort = newestFirst ? "-@timestamp" : "@timestamp";
 
         return $@"
 {{
@@ -27,7 +29,7 @@ public static class SearchQuery
         }}
     }},
     ""sort"": [
-        ""-@timestamp""
+        ""{sort}""
     ],
     ""from"": 0,
     ""size"": {count},

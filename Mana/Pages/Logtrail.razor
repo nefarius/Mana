@@ -1,33 +1,33 @@
 ﻿@page "/logtrail"
 @using Flurl.Http
 @using Mana.Models
-@using Mana.Util
 @using Microsoft.Extensions.Options
 @using XtermBlazor
+@using Microsoft.Extensions.Caching.Memory
 @inject IOptions<ManaConfiguration> Config
+@inject IMemoryCache Cache
 
 <PageTitle>Logtrail</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
 
-<MudPaper Elevation="25">
-	<MudToolBar>
-		<MudSpacer />
-		<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange" />
-		<MudToggleIconButton @bind-Toggled="@AutoRefresh"
-							 Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
-							 ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On" />
-		<span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
-		<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh" />
-	</MudToolBar>
-</MudPaper>
-
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-	<MudTabPanel Text="Terminal">
+	<MudTabPanel Text="Live Stream">
 		<Xterm @ref="_terminal" Options="_options" AddonIds="_addonIds" OnFirstRender="@OnFirstRender" />
 	</MudTabPanel>
 
-	<MudTabPanel Text="Data Grid">
+	<MudTabPanel Text="Browse Data">
+		<MudPaper Elevation="25">
+			<MudToolBar>
+				<MudSpacer />
+				<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange" />
+				<MudToggleIconButton @bind-Toggled="@AutoRefresh"
+									 Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
+									 ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On" />
+				<span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
+				<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh" />
+			</MudToolBar>
+		</MudPaper>
 		<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
 			<Columns>
 				<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true" />
@@ -44,27 +44,56 @@
 
 	private Xterm _terminal;
 
-	private readonly string[] _addonIds = new[]
+	private readonly string[] _addonIds =
 	{
-		"xterm-addon-fit",
+		"xterm-addon-fit"
 	};
 
 	private readonly TerminalOptions _options = new()
-	{
-		CursorBlink = true,
-		CursorStyle = CursorStyle.Bar,
-	};
-    
+		{
+			CursorBlink = true,
+			CursorStyle = CursorStyle.Bar
+		};
+
 	private async Task OnFirstRender()
 	{
 		await _terminal.InvokeAddonFunctionVoidAsync("xterm-addon-fit", "fit");
 
-		await _terminal.WriteLine($"Hello from {Formatting.BHRed}xterm.js{Formatting.Reset} $ ");
+		_streamTimer = new Timer(async stateInfo =>
+		{
+			await InvokeAsync(async () =>
+			{
+				var now = DateTime.Now;
+
+				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:false);
+
+				var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
+
+				try
+				{
+					var result = await url
+						.WithBasicAuth(Config.Value.Username, Config.Value.Password)
+						.PostStringAsync(query)
+						.ReceiveJson<SearchResult>();
+
+					var entries = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+
+					foreach (var entry in entries)
+					{
+						await _terminal.WriteLine(entry.TerminalLine);
+					}
+				}
+				catch (FlurlHttpException)
+				{
+					// TODO: handle
+				}
+			});
+		}, new AutoResetEvent(false), _consoleDueTime, _consolePeriod);
 	}
 
 	private bool AutoRefresh
 	{
-		get => (_refreshTimer is not null);
+		get => _refreshTimer is not null;
 		set
 		{
 			if (value)
@@ -90,9 +119,14 @@
 
 	private Timer? _refreshTimer;
 
+	private Timer? _streamTimer;
+
 	private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now.AddDays(1).Date);
 
 	private IEnumerable<LogEntry> _elements = new List<LogEntry>();
+
+	private readonly TimeSpan _consoleDueTime = TimeSpan.FromSeconds(2);
+	private readonly TimeSpan _consolePeriod = TimeSpan.FromSeconds(2);
 
 	protected override async Task OnInitializedAsync()
 	{
@@ -127,4 +161,5 @@
 		await LoadResults();
 		StateHasChanged();
 	}
+
 }

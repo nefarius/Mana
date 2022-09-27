@@ -15,6 +15,8 @@ builder.Services.AddMudServices();
 
 builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetSection("Mana"));
 
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
