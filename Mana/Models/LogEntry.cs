@@ -58,7 +58,9 @@ public class LogEntry
         return new LogEntry
         {
             Timestamp = hit.Timestamp,
-            LoggerName = hit.Source?.LogName,
+            LoggerName = string.IsNullOrEmpty(hit.Source?.LogName) 
+                ? hit.Source?.ContainerName 
+                : hit.Source?.LogName,
             Level = level,
             Message = hit.Source?.Log
         };
