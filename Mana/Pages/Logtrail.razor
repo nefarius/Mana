@@ -8,32 +8,93 @@
 
 <MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
 
-<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true">
+<MudPaper Elevation="25">
+	<MudToolBar>
+		<MudSpacer />
+		<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange"/>
+		<MudToggleIconButton @bind-Toggled="@AutoRefresh"
+		                     Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
+		                     ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On"/>
+		<span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
+		<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh"/>
+	</MudToolBar>
+</MudPaper>
+
+<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
 	<Columns>
-		<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
-		<Column T="LogEntry" Field="LoggerName" Title="Logger"/>
-		<Column T="LogEntry" Field="Level" Title="Level"/>
-		<Column T="LogEntry" Field="Message" Title="Message"/>
+		<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true" />
+		<Column T="LogEntry" Field="LoggerName" Title="Logger" />
+		<Column T="LogEntry" Field="Level" Title="Level" />
+		<Column T="LogEntry" Field="Message" Title="Message" />
 	</Columns>
 </MudDataGrid>
 
 
 @code {
+
+	private bool AutoRefresh
+	{
+		get => (_refreshTimer is not null);
+		set
+		{
+			if (value)
+			{
+				_refreshTimer = new Timer(async stateInfo =>
+				{
+					await InvokeAsync(async () =>
+					{
+						await LoadResults();
+						StateHasChanged();
+					});
+				}, new AutoResetEvent(false), 2000, 2000);
+			}
+			else
+			{
+				if (_refreshTimer is null) return;
+
+				_refreshTimer.Dispose();
+				_refreshTimer = null;
+			}
+		}
+	}
+
+	private Timer? _refreshTimer;
+
+	private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now);
+
 	private IEnumerable<LogEntry> _elements = new List<LogEntry>();
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
-		var query = SearchQuery.BuildQuery(DateTime.UtcNow.AddDays(-10), DateTime.UtcNow);
+		await LoadResults();
+	}
+
+	private async Task LoadResults()
+	{
+		var query = SearchQuery.BuildQuery(_dateRange.Start, _dateRange.End);
 
 		var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
-		var result = await url
-			.WithBasicAuth(Config.Value.Username, Config.Value.Password)
-			.PostStringAsync(query)
-			.ReceiveJson<SearchResult>();
-			
-		_elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+		try
+		{
+			var result = await url
+				.WithBasicAuth(Config.Value.Username, Config.Value.Password)
+				.PostStringAsync(query)
+				.ReceiveJson<SearchResult>();
+
+			_elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+		}
+		catch (FlurlHttpException)
+		{
+			// TODO: handle
+		}
+	}
+
+	async Task Refresh()
+	{
+		await LoadResults();
+		StateHasChanged();
 	}
 }

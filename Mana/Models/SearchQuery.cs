@@ -2,8 +2,11 @@
 
 public static class SearchQuery
 {
-    public static string BuildQuery(DateTime from, DateTime to, int count = 100)
+    public static string BuildQuery(DateTime? from, DateTime? to, int count = 100)
     {
+        if (!from.HasValue || !to.HasValue)
+            throw new ArgumentNullException("Both start and end times must be provided.");
+
         return $@"
 {{
     ""query"": {{
@@ -12,9 +15,8 @@ public static class SearchQuery
                 {{
                     ""range"": {{
                         ""@timestamp"": {{
-                            ""gte"": ""{from:O}"",
-                            ""lt"": ""{to:O}"",
-                            ""format"": ""2006-01-02T15:04:05Z07:00""
+                            ""gte"": ""{from.Value.ToUniversalTime():yyyy-MM-ddTHH:mm:ssK}"",
+                            ""lt"": ""{to.Value.ToUniversalTime():yyyy-MM-ddTHH:mm:ssK}""
                         }}
                     }}
                 }},
