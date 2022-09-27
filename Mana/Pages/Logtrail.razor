@@ -60,7 +60,7 @@
 
 	private Timer? _refreshTimer;
 
-	private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now);
+	private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now.AddDays(1).Date);
 
 	private IEnumerable<LogEntry> _elements = new List<LogEntry>();
 
