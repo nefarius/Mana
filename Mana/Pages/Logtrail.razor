@@ -1,7 +1,9 @@
 ﻿@page "/logtrail"
 @using Flurl.Http
 @using Mana.Models
+@using Mana.Util
 @using Microsoft.Extensions.Options
+@using XtermBlazor
 @inject IOptions<ManaConfiguration> Config
 
 <PageTitle>Logtrail</PageTitle>
@@ -11,26 +13,54 @@
 <MudPaper Elevation="25">
 	<MudToolBar>
 		<MudSpacer />
-		<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange"/>
+		<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange" />
 		<MudToggleIconButton @bind-Toggled="@AutoRefresh"
-		                     Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
-		                     ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On"/>
+							 Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
+							 ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On" />
 		<span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
-		<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh"/>
+		<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh" />
 	</MudToolBar>
 </MudPaper>
 
-<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
-	<Columns>
-		<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true" />
-		<Column T="LogEntry" Field="LoggerName" Title="Logger" />
-		<Column T="LogEntry" Field="Level" Title="Level" />
-		<Column T="LogEntry" Field="Message" Title="Message" />
-	</Columns>
-</MudDataGrid>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+	<MudTabPanel Text="Terminal">
+		<Xterm @ref="_terminal" Options="_options" AddonIds="_addonIds" OnFirstRender="@OnFirstRender" />
+	</MudTabPanel>
+
+	<MudTabPanel Text="Data Grid">
+		<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
+			<Columns>
+				<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true" />
+				<Column T="LogEntry" Field="LoggerName" Title="Logger" />
+				<Column T="LogEntry" Field="Level" Title="Level" />
+				<Column T="LogEntry" Field="Message" Title="Message" />
+			</Columns>
+		</MudDataGrid>
+	</MudTabPanel>
+</MudTabs>
 
 
 @code {
+
+	private Xterm _terminal;
+
+	private readonly string[] _addonIds = new[]
+	{
+		"xterm-addon-fit",
+	};
+
+	private readonly TerminalOptions _options = new()
+	{
+		CursorBlink = true,
+		CursorStyle = CursorStyle.Bar,
+	};
+    
+	private async Task OnFirstRender()
+	{
+		await _terminal.InvokeAddonFunctionVoidAsync("xterm-addon-fit", "fit");
+
+		await _terminal.WriteLine($"Hello from {Formatting.BHRed}xterm.js{Formatting.Reset} $ ");
+	}
 
 	private bool AutoRefresh
 	{

@@ -10,6 +10,7 @@
     <base href="~/" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="_content/XtermBlazor/XtermBlazor.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -26,6 +27,11 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.server.js"></script>
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
+	<script src="_content/XtermBlazor/XtermBlazor.min.js"></script>
+    <!-- xterm-addon-fit CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.min.js"></script>
+	<!-- Register addon to XtermBlazor -->
+    <script>window.XtermBlazor.registerAddon("xterm-addon-fit", new window.FitAddon.FitAddon());</script>
 </body>
 </html>

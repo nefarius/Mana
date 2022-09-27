@@ -12,6 +12,7 @@
     <PackageReference Include="Flurl.Http" Version="3.2.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
     <PackageReference Include="MudBlazor" Version="6.0.13" />
+    <PackageReference Include="XtermBlazor" Version="1.6.1" />
   </ItemGroup>
 
 </Project>
