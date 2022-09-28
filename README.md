@@ -1,3 +1,5 @@
+<img src="assets/NSS-128x128.png" align="right" />
+
 # Mana
 
 A *tiny* work-in-progress [Kibana](https://www.elastic.co/kibana/) replacement using [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor).
