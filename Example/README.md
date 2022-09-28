@@ -11,4 +11,4 @@ Adjust the credentials in the `docker-compose.yml` file for your needs, then add
         tag: container-name
 ```
 
-This will rout the log outputs with nanosecond-precision timestamps through FLuent Bit into ZincSearch. From there it can be queried using either the Zinc Web UI or Mana.
+This will rout the log outputs with nanosecond-precision timestamps through Fluent Bit into ZincSearch. From there it can be queried using either the Zinc Web UI or Mana.
