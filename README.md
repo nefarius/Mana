@@ -10,7 +10,7 @@ This project was created out of spite that every search for log harvesting and v
 
 Instead of Elasticsearch I use [ZincSearch](https://zincsearch.com/), a fast, small Go application with Elastic-compatible HTTP API. Fluentd has been replaced with [Fluent Bit](https://fluentbit.io/). Last but not least I started to write my own little Kibana which currently only allows log live view and historic search. More to come, maybe, if I need it.
 
-Look in the [example](../../tree/master/example) directory for a configuration template.
+Look in the [example](../../tree/master/Example) directory for a configuration template.
 
 ## 3rd party resources
 
