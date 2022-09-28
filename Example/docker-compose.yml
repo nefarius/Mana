@@ -7,6 +7,7 @@ services:
     container_name: zinc
     restart: always
     environment:
+      - TZ=Europe/Vienna
       - ZINC_DATA_PATH=/data
       - ZINC_FIRST_ADMIN_USER=admin
       - ZINC_FIRST_ADMIN_PASSWORD=admin
@@ -32,6 +33,7 @@ services:
       - /fluent-bit/bin/fluent-bit
       - --config=/etc/fluent-bit/fluent-bit.conf
     environment:
+      - TZ=Europe/Vienna
       - FLB_ES_HOST=zinc
       - FLB_ES_PORT=4080
       - FLB_ES_USER=admin
@@ -56,6 +58,7 @@ services:
     ports:
       - 5601:80
     environment:
+      - TZ=Europe/Vienna
       - Mana__ServerUrl=http://zinc:4080/
       - Mana__Username=admin
       - Mana__Password=admin

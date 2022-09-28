@@ -44,6 +44,8 @@
 
 	private Xterm _terminal;
 
+	private readonly Dictionary<string, LogEntry> _streamedEventsHistory = new();
+
 	private readonly string[] _addonIds =
 	{
 		"xterm-addon-fit"
@@ -66,7 +68,7 @@
 			{
 				var now = DateTime.Now;
 
-				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod), now, newestFirst:false);
+				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod).AddSeconds(-1), now, newestFirst: false);
 
 				var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
@@ -77,11 +79,19 @@
 						.PostStringAsync(query)
 						.ReceiveJson<SearchResult>();
 
-					var entries = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+					var results = result.Hits.Hits
+						.Select(LogEntry.FromSearchHit)
+						.ToDictionary(x => x.Id, y => y);
+
+					var entries = results
+						.Except(_streamedEventsHistory)
+						.ToDictionary(x => x.Key, y => y.Value);
 
 					foreach (var entry in entries)
 					{
-						await _terminal.WriteLine(entry.TerminalLine);
+						if (!_streamedEventsHistory.ContainsKey(entry.Key))
+							_streamedEventsHistory.Add(entry.Key, entry.Value);
+						await _terminal.WriteLine(entry.Value.TerminalLine);
 					}
 				}
 				catch (FlurlHttpException)

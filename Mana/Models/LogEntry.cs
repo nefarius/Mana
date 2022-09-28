@@ -56,7 +56,7 @@ public class LogEntry
     }
 
     public string TerminalLine =>
-        $"{Formatting.BHYellow}{Timestamp}{Formatting.Reset} {LoggerName} [{LogLevelTerminalString}] - {Message}";
+        $"{Formatting.BHYellow}{Timestamp.ToLocalTime():s}{Formatting.Reset} {LoggerName} [{LogLevelTerminalString}] - {Message}";
 
     public static LogEntry FromSearchHit(Hit hit)
     {
