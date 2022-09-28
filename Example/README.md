@@ -1,6 +1,6 @@
 # Example logging stack for Docker
 
-Lightweight Docker Logging stack
+Adjust the credentials in the `docker-compose.yml` file for your needs, then add the following logger settings to your existing containers:
 
 ```yaml
     logging:
@@ -10,3 +10,5 @@ Lightweight Docker Logging stack
         fluentd-sub-second-precision: true
         tag: container-name
 ```
+
+This will rout the log outputs with nanosecond-precision timestamps through FLuent Bit into ZincSearch. From there it can be queried using either the Zinc Web UI or Mana.
