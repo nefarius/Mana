@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Drawing;
+using System.Text.RegularExpressions;
 using Mana.Util;
 
 namespace Mana.Models;
@@ -14,6 +15,24 @@ public enum LogLevel
     Fatal
 }
 
+public sealed class ColorCache
+{
+    private readonly Dictionary<string, Color> _colors = new();
+    private readonly Random _random = new();
+
+    public Color GetFor(string loggerName)
+    {
+        if (_colors.ContainsKey(loggerName))
+            return _colors[loggerName];
+
+        var entry = Color.FromArgb(unchecked((int)0xFF000000) + (_random.Next(0xFFFFFF) & 0x7F7F7F));
+
+        _colors[loggerName] = entry;
+
+        return entry;
+    }
+}
+
 public class LogEntry
 {
     private static readonly Regex _traceRegex = new(@"TRACE");
@@ -27,6 +46,13 @@ public class LogEntry
     private static readonly Regex _errornRegex = new(@"ERROR|ERR|error");
 
     private static readonly Regex _fatalnRegex = new(@"FATAL|FTL|fatal");
+
+    private readonly ColorCache _cache;
+
+    public LogEntry(ColorCache cache)
+    {
+        _cache = cache;
+    }
 
     public string Id { get; set; }
 
@@ -46,9 +72,11 @@ public class LogEntry
             {
                 case LogLevel.Fatal:
                 case LogLevel.Error:
-                    return $"{Formatting.Red}{Level}{Formatting.Reset}";
+                    return $"{Color256.DarkRed52.AsEscapeSequence()}{Level}{Formatting.Reset}";
                 case LogLevel.Warning:
-                    return $"{Formatting.YellowHB}{Level}{Formatting.Reset}";
+                    return $"{Color256.Yellow226.AsEscapeSequence()}{Level}{Formatting.Reset}";
+                case LogLevel.Info:
+                    return $"{Color256.Aquamarine86.AsEscapeSequence()}{Level}{Formatting.Reset}";
                 default:
                     return Level.ToString();
             }
@@ -56,9 +84,10 @@ public class LogEntry
     }
 
     public string TerminalLine =>
-        $"{Formatting.BHYellow}{Timestamp.ToLocalTime():s}{Formatting.Reset} {LoggerName} [{LogLevelTerminalString}] - {Message}";
+        $"{Color256.Yellow226.AsEscapeSequence()}{Timestamp.ToLocalTime():s}{Formatting.Reset} " +
+        $"{_cache.GetFor(LoggerName).AsEscapeSequence()}{LoggerName}{Formatting.Reset} [{LogLevelTerminalString}] - {Message}";
 
-    public static LogEntry FromSearchHit(Hit hit)
+    public static LogEntry FromSearchHit(Hit hit, ColorCache cache = default)
     {
         var level = LogLevel.None;
 
@@ -78,7 +107,7 @@ public class LogEntry
                 level = LogLevel.Trace;
         }
 
-        return new LogEntry
+        return new LogEntry(cache)
         {
             Id = hit.Id,
             Timestamp = hit.Timestamp,

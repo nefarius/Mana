@@ -5,6 +5,7 @@
 @using Microsoft.Extensions.Options
 @using XtermBlazor
 @using Microsoft.Extensions.Caching.Memory
+@using System.Runtime.CompilerServices
 @inject IOptions<ManaConfiguration> Config
 @inject IMemoryCache Cache
 
@@ -45,6 +46,8 @@
 
 	private Xterm _terminal;
 
+	private ColorCache _cache = new();
+
 	private readonly Dictionary<string, LogEntry> _streamedEventsHistory = new();
 
 	private readonly string[] _addonIds =
@@ -81,7 +84,7 @@
 						.ReceiveJson<SearchResult>();
 
 					var results = result.Hits.Hits
-						.Select(LogEntry.FromSearchHit)
+						.Select(h => LogEntry.FromSearchHit(h, _cache))
 						.ToDictionary(x => x.Id, y => y);
 
 					var entries = results
@@ -160,7 +163,7 @@
 				.PostStringAsync(query)
 				.ReceiveJson<SearchResult>();
 
-			_elements = result.Hits.Hits.Select(LogEntry.FromSearchHit).ToList();
+			_elements = result.Hits.Hits.Select(h => LogEntry.FromSearchHit(h, _cache)).ToList();
 		}
 		catch (FlurlHttpException)
 		{
