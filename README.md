@@ -12,7 +12,12 @@ Instead of Elasticsearch I use [ZincSearch](https://zincsearch.com/), a fast, sm
 
 Look in the [example](../../tree/master/Example) directory for a configuration template.
 
-## 3rd party resources
+## 3rd party credits
 
 - [elasticsearch + fluent-bit + kibana](https://github.com/qqbuby/efk-docker)
 - [ZincSearch - fluent-bit](https://docs.zincsearch.com/ingestion/fluent-bit/)
+- [Xterm 256 Colors](https://tintin.mudhalla.net/info/256color/)
+- [Cross-platform .NET Standard 2.0 colored terminal library](https://github.com/RaZeR-RBI/ansiterm-net)
+- [Brings xterm.js to Blazor](https://github.com/BattlefieldDuck/XtermBlazor)
+- [ANSI Color Codes](https://talyian.github.io/ansicolors/)
+- [How-to: Use ANSI colors in the terminal](https://ss64.com/nt/syntax-ansi.html)
