@@ -1,120 +1,120 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Mana.Models;
 
 public class Aggregations
 {
-    [JsonProperty("histogram")]
+    [JsonPropertyName("histogram")]
     public Histogram Histogram { get; set; }
 }
 
 public class Bucket
 {
-    [JsonProperty("doc_count")]
+    [JsonPropertyName("doc_count")]
     public int DocCount { get; set; }
 
-    [JsonProperty("key")]
+    [JsonPropertyName("key")]
     public DateTime Key { get; set; }
 }
 
 public class Histogram
 {
-    [JsonProperty("buckets")]
+    [JsonPropertyName("buckets")]
     public List<Bucket> Buckets { get; } = new();
 }
 
 public class Hit
 {
-    [JsonProperty("_index")]
+    [JsonPropertyName("_index")]
     public string Index { get; set; }
 
-    [JsonProperty("_type")]
+    [JsonPropertyName("_type")]
     public string Type { get; set; }
 
-    [JsonProperty("_id")]
+    [JsonPropertyName("_id")]
     public string Id { get; set; }
 
-    [JsonProperty("_score")]
+    [JsonPropertyName("_score")]
     public int Score { get; set; }
 
-    [JsonProperty("@timestamp")]
+    [JsonPropertyName("@timestamp")]
     public DateTime Timestamp { get; set; }
 
-    [JsonProperty("_source")]
+    [JsonPropertyName("_source")]
     public SourceEntry Source { get; set; }
 }
 
 public class HitMeta
 {
-    [JsonProperty("total")]
+    [JsonPropertyName("total")]
     public Total Total { get; set; }
 
-    [JsonProperty("max_score")]
+    [JsonPropertyName("max_score")]
     public int MaxScore { get; set; }
 
-    [JsonProperty("hits")]
+    [JsonPropertyName("hits")]
     public List<Hit> Hits { get; } = new();
 }
 
 public class SearchResult
 {
-    [JsonProperty("took")]
+    [JsonPropertyName("took")]
     public int Took { get; set; }
 
-    [JsonProperty("timed_out")]
+    [JsonPropertyName("timed_out")]
     public bool TimedOut { get; set; }
 
-    [JsonProperty("_shards")]
+    [JsonPropertyName("_shards")]
     public Shards Shards { get; set; }
 
-    [JsonProperty("hits")]
+    [JsonPropertyName("hits")]
     public HitMeta Hits { get; set; }
 
-    [JsonProperty("aggregations")]
+    [JsonPropertyName("aggregations")]
     public Aggregations Aggregations { get; set; }
 }
 
 public class Shards
 {
-    [JsonProperty("total")]
+    [JsonPropertyName("total")]
     public int Total { get; set; }
 
-    [JsonProperty("successful")]
+    [JsonPropertyName("successful")]
     public int Successful { get; set; }
 
-    [JsonProperty("skipped")]
+    [JsonPropertyName("skipped")]
     public int Skipped { get; set; }
 
-    [JsonProperty("failed")]
+    [JsonPropertyName("failed")]
     public int Failed { get; set; }
 }
 
 public class SourceEntry
 {
-    [JsonProperty("@log_name")]
+    [JsonPropertyName("@log_name")]
     public string LogName { get; set; }
 
-    [JsonProperty("message")]
+    [JsonPropertyName("message")]
     public string Message { get; set; }
 
-    [JsonProperty("worker")]
+    [JsonPropertyName("worker")]
     public int Worker { get; set; }
 
-    [JsonProperty("container_id")]
+    [JsonPropertyName("container_id")]
     public string ContainerId { get; set; }
 
-    [JsonProperty("container_name")]
+    [JsonPropertyName("container_name")]
     public string ContainerName { get; set; }
 
-    [JsonProperty("log")]
+    [JsonPropertyName("log")]
     public string Log { get; set; }
 
-    [JsonProperty("source")]
+    [JsonPropertyName("source")]
     public string Source { get; set; }
 }
 
 public class Total
 {
-    [JsonProperty("value")]
+    [JsonPropertyName("value")]
     public int Value { get; set; }
 }
