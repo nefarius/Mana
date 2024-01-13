@@ -1,8 +1,10 @@
 using Mana.Models;
+
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+
 using MudBlazor.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddEnvironmentVariables();
 
@@ -17,7 +19,7 @@ builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetS
 
 builder.Services.AddMemoryCache();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
