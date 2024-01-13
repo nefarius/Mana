@@ -2,6 +2,8 @@
 
 # Mana
 
+[![.NET](https://github.com/nefarius/Mana/actions/workflows/build.yml/badge.svg)](https://github.com/nefarius/Mana/actions/workflows/build.yml)
+
 A *tiny* work-in-progress [Kibana](https://www.elastic.co/kibana/) replacement using [Blazor](https://dotnet.microsoft.com/en-us/apps/aspnet/web-apps/blazor).
 
 ## Why
