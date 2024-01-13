@@ -22,8 +22,8 @@ public sealed class ColorCache
 
     public Color GetFor(string loggerName)
     {
-        if (_colors.ContainsKey(loggerName))
-            return _colors[loggerName];
+        if (_colors.TryGetValue(loggerName, out Color color))
+            return color;
 
         var entry = Color.FromArgb(unchecked((int)0xFF000000) + (_random.Next(0xFFFFFF) & 0x7F7F7F));
 
@@ -35,17 +35,17 @@ public sealed class ColorCache
 
 public class LogEntry
 {
-    private static readonly Regex _traceRegex = new(@"TRACE");
+    private static readonly Regex TraceRegex = new(@"TRACE");
 
-    private static readonly Regex _debugRegex = new(@"DEBUG|debug");
+    private static readonly Regex DebugRegex = new(@"DEBUG|debug");
 
-    private static readonly Regex _infoRegex = new(@"INFO|INF|informational");
+    private static readonly Regex InfoRegex = new(@"INFO|INF|informational");
 
-    private static readonly Regex _warnRegex = new(@"WARN|WRN|WARNING");
+    private static readonly Regex WarnRegex = new(@"WARN|WRN|WARNING");
 
-    private static readonly Regex _errornRegex = new(@"ERROR|ERR|error");
+    private static readonly Regex ErrorRegex = new(@"ERROR|ERR|error");
 
-    private static readonly Regex _fatalnRegex = new(@"FATAL|FTL|fatal");
+    private static readonly Regex FatalRegex = new(@"FATAL|FTL|fatal");
 
     private readonly ColorCache _cache;
 
@@ -77,6 +77,9 @@ public class LogEntry
                     return $"{Color256.Yellow226.AsEscapeSequence()}{Level}{Formatting.Reset}";
                 case LogLevel.Info:
                     return $"{Color256.Aquamarine86.AsEscapeSequence()}{Level}{Formatting.Reset}";
+                case LogLevel.None:
+                case LogLevel.Trace:
+                case LogLevel.Debug:
                 default:
                     return Level.ToString();
             }
@@ -93,17 +96,17 @@ public class LogEntry
 
         if (hit.Source is not null && !string.IsNullOrEmpty(hit.Source.Log))
         {
-            if (_fatalnRegex.IsMatch(hit.Source.Log))
+            if (FatalRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Fatal;
-            else if (_errornRegex.IsMatch(hit.Source.Log))
+            else if (ErrorRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Error;
-            else if (_warnRegex.IsMatch(hit.Source.Log))
+            else if (WarnRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Warning;
-            else if (_infoRegex.IsMatch(hit.Source.Log))
+            else if (InfoRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Info;
-            else if (_debugRegex.IsMatch(hit.Source.Log))
+            else if (DebugRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Debug;
-            else if (_traceRegex.IsMatch(hit.Source.Log))
+            else if (TraceRegex.IsMatch(hit.Source.Log))
                 level = LogLevel.Trace;
         }
 

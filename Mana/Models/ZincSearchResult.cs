@@ -1,14 +1,17 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace Mana.Models;
 
-public class Aggregations
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Aggregations
 {
     [JsonPropertyName("histogram")]
     public Histogram Histogram { get; set; }
 }
 
-public class Bucket
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Bucket
 {
     [JsonPropertyName("doc_count")]
     public int DocCount { get; set; }
@@ -17,13 +20,15 @@ public class Bucket
     public DateTime Key { get; set; }
 }
 
-public class Histogram
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Histogram
 {
     [JsonPropertyName("buckets")]
     public List<Bucket> Buckets { get; } = new();
 }
 
-public class Hit
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Hit
 {
     [JsonPropertyName("_index")]
     public string Index { get; set; }
@@ -44,7 +49,8 @@ public class Hit
     public SourceEntry Source { get; set; }
 }
 
-public class HitMeta
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class HitMeta
 {
     [JsonPropertyName("total")]
     public Total Total { get; set; }
@@ -56,7 +62,8 @@ public class HitMeta
     public List<Hit> Hits { get; } = new();
 }
 
-public class SearchResult
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class SearchResult
 {
     [JsonPropertyName("took")]
     public int Took { get; set; }
@@ -74,7 +81,8 @@ public class SearchResult
     public Aggregations Aggregations { get; set; }
 }
 
-public class Shards
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Shards
 {
     [JsonPropertyName("total")]
     public int Total { get; set; }
@@ -89,7 +97,8 @@ public class Shards
     public int Failed { get; set; }
 }
 
-public class SourceEntry
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class SourceEntry
 {
     [JsonPropertyName("@log_name")]
     public string LogName { get; set; }
@@ -113,7 +122,8 @@ public class SourceEntry
     public string Source { get; set; }
 }
 
-public class Total
+[SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
+public sealed class Total
 {
     [JsonPropertyName("value")]
     public int Value { get; set; }

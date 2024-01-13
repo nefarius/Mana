@@ -1,6 +1,6 @@
 ﻿namespace Mana.Models;
 
-public class ManaConfiguration
+public sealed class ManaConfiguration
 {
     public string ServerUrl { get; set; }
 

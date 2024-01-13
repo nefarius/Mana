@@ -5,9 +5,11 @@ public static class SearchQuery
     public static string BuildQuery(DateTime? from, DateTime? to, int count = 100, bool newestFirst = true)
     {
         if (!from.HasValue || !to.HasValue)
+        {
             throw new ArgumentNullException("Both start and end times must be provided.");
+        }
 
-        var sort = newestFirst ? "-@timestamp" : "@timestamp";
+        string sort = newestFirst ? "-@timestamp" : "@timestamp";
 
         return $@"
 {{
