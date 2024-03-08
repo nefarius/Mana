@@ -1,180 +1,37 @@
 ﻿@page "/logtrail"
-@using Flurl.Http
-@using Mana.Models
-@using Mana.Util
-@using Microsoft.Extensions.Options
 @using XtermBlazor
-@using Microsoft.Extensions.Caching.Memory
-@using System.Runtime.CompilerServices
+@using Mana.Models
+@using Microsoft.Extensions.Options
 @inject IOptions<ManaConfiguration> Config
-@inject IMemoryCache Cache
 
 <PageTitle>Logtrail</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Logtrail</MudText>
 
 <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-	<MudTabPanel Text="Live Stream">
-		<Xterm @ref="_terminal" Options="_options" AddonIds="_addonIds" OnFirstRender="@OnFirstRender" />
-	</MudTabPanel>
+    <MudTabPanel Text="Live Stream">
+        <Xterm @ref="_terminal" Options="_options" AddonIds="_addonIds" OnFirstRender="@OnFirstRender"/>
+    </MudTabPanel>
 
-	<MudTabPanel Text="Browse Data">
-		<MudPaper Elevation="25">
-			<MudToolBar>
-				<MudSpacer />
-				<MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange" />
-				<MudToggleIconButton @bind-Toggled="@AutoRefresh"
-									 Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
-									 ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On" />
-				<span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
-				<MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh" />
-			</MudToolBar>
-		</MudPaper>
-		<MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
-			<Columns>
-				<Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true" />
-				<Column T="LogEntry" Field="LoggerName" Title="Logger" />
-				<Column T="LogEntry" Field="Level" Title="Level" />
-				<Column T="LogEntry" Field="Message" Title="Message" />
-			</Columns>
-		</MudDataGrid>
-	</MudTabPanel>
+    <MudTabPanel Text="Browse Data">
+        <MudPaper Elevation="25">
+            <MudToolBar>
+                <MudSpacer/>
+                <MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange"/>
+                <MudToggleIconButton @bind-Toggled="@AutoRefresh"
+                                     Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
+                                     ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On"/>
+                <span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
+                <MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh"/>
+            </MudToolBar>
+        </MudPaper>
+        <MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
+            <Columns>
+                <Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
+                <Column T="LogEntry" Field="LoggerName" Title="Logger"/>
+                <Column T="LogEntry" Field="Level" Title="Level"/>
+                <Column T="LogEntry" Field="Message" Title="Message"/>
+            </Columns>
+        </MudDataGrid>
+    </MudTabPanel>
 </MudTabs>
-
-
-@code {
-
-	private Xterm _terminal;
-
-	private ColorCache _cache = new();
-
-	private readonly Dictionary<string, LogEntry> _streamedEventsHistory = new();
-
-	private readonly string[] _addonIds =
-	{
-		"xterm-addon-fit"
-	};
-
-	private readonly TerminalOptions _options = new()
-		{
-			CursorBlink = true,
-			CursorStyle = CursorStyle.Bar,
-			Rows = 38
-		};
-
-	private async Task OnFirstRender()
-	{
-		await _terminal.InvokeAddonFunctionVoidAsync("xterm-addon-fit", "fit");
-
-		_streamTimer = new Timer(async stateInfo =>
-		{
-			await InvokeAsync(async () =>
-			{
-				var now = DateTime.Now;
-
-				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod).AddSeconds(-1), now, newestFirst: false);
-
-				var url = new Uri(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
-
-				try
-				{
-					var result = await url
-						.WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
-						.PostStringAsync(query)
-						.ReceiveJson<SearchResult>();
-
-					var results = result.Hits.Hits
-						.Select(h => LogEntry.FromSearchHit(h, _cache))
-						.ToDictionary(x => x.Id, y => y);
-
-					var entries = results
-						.Except(_streamedEventsHistory)
-						.ToDictionary(x => x.Key, y => y.Value);
-
-					foreach (var entry in entries)
-					{
-						if (!_streamedEventsHistory.ContainsKey(entry.Key))
-							_streamedEventsHistory.Add(entry.Key, entry.Value);
-						await _terminal.WriteLine(entry.Value.TerminalLine);
-					}
-				}
-				catch (FlurlHttpException)
-				{
-					// TODO: handle
-				}
-			});
-		}, new AutoResetEvent(false), _consoleDueTime, _consolePeriod);
-	}
-
-	private bool AutoRefresh
-	{
-		get => _refreshTimer is not null;
-		set
-		{
-			if (value)
-			{
-				_refreshTimer = new Timer(async stateInfo =>
-				{
-					await InvokeAsync(async () =>
-					{
-						await LoadResults();
-						StateHasChanged();
-					});
-				}, new AutoResetEvent(false), 2000, 2000);
-			}
-			else
-			{
-				if (_refreshTimer is null) return;
-
-				_refreshTimer.Dispose();
-				_refreshTimer = null;
-			}
-		}
-	}
-
-	private Timer? _refreshTimer;
-
-	private Timer? _streamTimer;
-
-	private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now.AddDays(1).Date);
-
-	private IEnumerable<LogEntry> _elements = new List<LogEntry>();
-
-	private readonly TimeSpan _consoleDueTime = TimeSpan.FromSeconds(2);
-	private readonly TimeSpan _consolePeriod = TimeSpan.FromSeconds(2);
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-
-		await LoadResults();
-	}
-
-	private async Task LoadResults()
-	{
-		var query = SearchQuery.BuildQuery(_dateRange.Start, _dateRange.End);
-
-		var url = new Uri(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
-
-		try
-		{
-			var result = await url
-				.WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
-				.PostStringAsync(query)
-				.ReceiveJson<SearchResult>();
-
-			_elements = result.Hits.Hits.Select(h => LogEntry.FromSearchHit(h, _cache)).ToList();
-		}
-		catch (FlurlHttpException)
-		{
-			// TODO: handle
-		}
-	}
-
-	async Task Refresh()
-	{
-		await LoadResults();
-		StateHasChanged();
-	}
-
-}
