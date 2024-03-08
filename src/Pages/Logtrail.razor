@@ -74,12 +74,12 @@
 
 				var query = SearchQuery.BuildQuery(now.Add(-_consolePeriod).AddSeconds(-1), now, newestFirst: false);
 
-				var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
+				var url = new Uri(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
 				try
 				{
 					var result = await url
-						.WithBasicAuth(Config.Value.Username, Config.Value.Password)
+						.WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
 						.PostStringAsync(query)
 						.ReceiveJson<SearchResult>();
 
@@ -154,12 +154,12 @@
 	{
 		var query = SearchQuery.BuildQuery(_dateRange.Start, _dateRange.End);
 
-		var url = new Uri(new Uri(Config.Value.ServerUrl), new Uri("/es/_search", UriKind.Relative));
+		var url = new Uri(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
 
 		try
 		{
 			var result = await url
-				.WithBasicAuth(Config.Value.Username, Config.Value.Password)
+				.WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
 				.PostStringAsync(query)
 				.ReceiveJson<SearchResult>();
 

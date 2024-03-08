@@ -10,6 +10,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example", "Example", "{1A0897F7-6692-470A-8FD1-024796F86AF3}"
+	ProjectSection(SolutionItems) = preProject
+		Example\docker-compose.yml = Example\docker-compose.yml
+		Example\README.md = Example\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "conf", "conf", "{2E3B7AF9-7BEB-4172-ADB8-1EA6A46CF6EA}"
+	ProjectSection(SolutionItems) = preProject
+		Example\conf\parsers.conf = Example\conf\parsers.conf
+		Example\conf\fluent-bit.conf = Example\conf\fluent-bit.conf
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,5 +38,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63770766-D0FF-4B15-ABDA-F42414DB9BFF}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2E3B7AF9-7BEB-4172-ADB8-1EA6A46CF6EA} = {1A0897F7-6692-470A-8FD1-024796F86AF3}
 	EndGlobalSection
 EndGlobal

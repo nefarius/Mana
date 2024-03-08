@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 using MudBlazor.Services;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+using Nefarius.Utilities.AspNetCore;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args).Setup();
 
 builder.Configuration.AddEnvironmentVariables();
 
@@ -19,7 +21,7 @@ builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetS
 
 builder.Services.AddMemoryCache();
 
-WebApplication app = builder.Build();
+WebApplication app = builder.Build().Setup();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

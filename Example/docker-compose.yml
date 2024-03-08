@@ -1,7 +1,7 @@
 version: "3"
 
 services:
-  # https://docs.zincsearch.com/quickstart/#installation
+  # https://zincsearch-docs.zinc.dev/installation/
   zinc:
     image: public.ecr.aws/zinclabs/zinc:latest
     container_name: zinc
@@ -25,7 +25,7 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  # https://docs.zincsearch.com/ingestion/fluent-bit/
+  # https://zincsearch-docs.zinc.dev/ingestion/fluent-bit/
   fluent-bit:
     image: fluent/fluent-bit:1.9
     container_name: fluent-bit
@@ -59,19 +59,20 @@ services:
       - 5601:80
     environment:
       - TZ=Europe/Vienna
-      - Mana__ServerUrl=http://zinc:4080/
-      - Mana__Username=admin
-      - Mana__Password=admin
+      - Mana__Elastic__ServerUrl=http://zinc:4080/
+      - Mana__Elastic__Username=admin
+      - Mana__Elastic__Password=admin
     networks:
       - web
       - elastic
     labels:
+      # assumes we sit behind Traefik proxy
       - traefik.enable=true
-      - traefik.http.routers.kibana.rule=Host(`logs.example.org`)
-      - traefik.http.routers.kibana.entrypoints=web-secure
-      - traefik.http.routers.kibana.tls=true
-      - traefik.http.routers.kibana.tls.certresolver=le
-      - traefik.http.services.kibana.loadbalancer.server.port=80
+      - traefik.http.routers.mana-ui.rule=Host(`logs.example.org`)
+      - traefik.http.routers.mana-ui.entrypoints=web-secure
+      - traefik.http.routers.mana-ui.tls=true
+      - traefik.http.routers.mana-ui.tls.certresolver=le
+      - traefik.http.services.mana-ui.loadbalancer.server.port=80
     logging:
       options:
         max-size: "10m"
