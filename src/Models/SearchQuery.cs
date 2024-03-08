@@ -6,7 +6,7 @@ public static class SearchQuery
     {
         if (!from.HasValue || !to.HasValue)
         {
-            throw new ArgumentNullException("Both start and end times must be provided.");
+            throw new ArgumentNullException(nameof(from), "Both start and end times must be provided.");
         }
 
         string sort = newestFirst ? "-@timestamp" : "@timestamp";
