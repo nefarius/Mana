@@ -1,4 +1,6 @@
-# Example logging stack for Docker
+# Example logging sources
+
+## Logging stack for Docker (and Compose)
 
 Adjust the credentials in the `docker-compose.yml` file for your needs, then add the following logger settings to your
 existing containers:

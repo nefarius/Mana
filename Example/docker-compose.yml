@@ -14,10 +14,11 @@ services:
     volumes:
       - ./data/zinc:/data
     ports:
-      - 4080:4080
+      - 4080:4080 # for debugging, not required for production
     networks:
       - web
       - elastic
+    # only required when using Traefik
     labels:
       - traefik.enable=false
     logging:
@@ -45,6 +46,9 @@ services:
       - ./conf/:/etc/fluent-bit/:ro
     networks:
       - elastic
+    # only required when using Traefik
+    labels:
+      - traefik.enable=false
     logging:
       options:
         max-size: "10m"
@@ -80,5 +84,6 @@ services:
 
 networks:
   elastic:
+  # assumes we sit behind Traefik proxy
   web:
     external: true
