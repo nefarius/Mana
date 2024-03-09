@@ -7,11 +7,11 @@ existing containers:
 
 ```yaml
     logging:
-        driver: "fluentd"
-        options:
-            fluentd-address: 127.0.0.1:24224
-            fluentd-sub-second-precision: true
-            tag: container-name
+      driver: "fluentd"
+      options:
+        fluentd-address: 127.0.0.1:24224
+        fluentd-sub-second-precision: true
+        tag: <container-name>
 ```
 
 This will rout the log outputs with nanosecond-precision timestamps through Fluent Bit into ZincSearch. From there it

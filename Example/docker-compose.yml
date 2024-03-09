@@ -60,7 +60,7 @@ services:
     container_name: mana
     restart: always
     ports:
-      - 5601:80
+      - 5601:8080
     environment:
       - TZ=Europe/Vienna
       - Mana__Elastic__ServerUrl=http://zinc:4080/
