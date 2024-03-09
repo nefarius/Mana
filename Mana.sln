@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BA7DA687-3B73-4AD4-933E-7920BF3E11DF}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.dockerignore = .dockerignore
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
