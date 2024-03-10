@@ -1,0 +1,53 @@
+meta {
+  name: Example Search
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:4080/es/_search
+  body: json
+  auth: basic
+}
+
+auth:basic {
+  username: admin
+  password: admin
+}
+
+body:json {
+  {
+      "query": {
+          "bool": {
+              "must": [
+                  {
+                      "range": {
+                          "@timestamp": {
+                              "gte": "2024-02-09T14:52:33.020Z",
+                              "lt": "2024-03-10T14:52:33.020Z",
+                              "format": "2006-01-02T15:04:05Z07:00"
+                          }
+                      }
+                  },
+                  {
+                      "match_all": {}
+                  }
+              ]
+          }
+      },
+      "sort": [
+          "-@timestamp"
+      ],
+      "from": 0,
+      "size": 100,
+      "aggs": {
+          "histogram": {
+              "date_histogram": {
+                  "field": "@timestamp",
+                  "calendar_interval": "1d",
+                  "fixed_interval": ""
+              }
+          }
+      }
+  }
+}
