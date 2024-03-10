@@ -39,15 +39,6 @@ body:json {
           "-@timestamp"
       ],
       "from": 0,
-      "size": 100,
-      "aggs": {
-          "histogram": {
-              "date_histogram": {
-                  "field": "@timestamp",
-                  "calendar_interval": "1d",
-                  "fixed_interval": ""
-              }
-          }
-      }
+      "size": 100
   }
 }

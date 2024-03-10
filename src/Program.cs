@@ -5,7 +5,11 @@ using Elastic.Ingest.Elasticsearch.DataStreams;
 using Elastic.Serilog.Sinks;
 */
 
+using System.Net.Http.Headers;
+using System.Text;
+
 using Mana.Models;
+using Mana.Models.Refit;
 
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
@@ -13,7 +17,9 @@ using MudBlazor.Services;
 
 using Nefarius.Utilities.AspNetCore;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args).Setup(/*options =>
+using Refit;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args).Setup( /*options =>
 {
     options.Configuration.AddEnvironmentVariables();
 
@@ -42,6 +48,17 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 
 builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetSection("Mana"));
+
+builder.Services.AddRefitClient<IZincSearchApi>()
+    .ConfigureHttpClient(client =>
+    {
+        ManaConfiguration appConfig = builder.Configuration.GetSection("Mana").Get<ManaConfiguration>();
+        
+        client.BaseAddress = new Uri(appConfig.Elastic.ServerUrl);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
+            Convert.ToBase64String(
+                Encoding.ASCII.GetBytes($"{appConfig.Elastic.Username}:{appConfig.Elastic.Password}")));
+    });
 
 builder.Services.AddMemoryCache();
 
