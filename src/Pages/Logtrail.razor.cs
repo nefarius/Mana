@@ -101,9 +101,10 @@ public partial class Logtrail
                         await _terminal.WriteLine(entry.Value.TerminalLine);
                     }
                 }
-                catch (FlurlHttpException)
+                catch (FlurlHttpException ex)
                 {
-                    // TODO: handle
+                    Logger.LogError(ex, "Failed to execute search query");
+                    // TODO: handle in UI
                 }
             });
         }, new AutoResetEvent(false), _consoleDueTime, _consolePeriod);
@@ -131,9 +132,10 @@ public partial class Logtrail
 
             _elements = result.Hits.Hits.Select(h => LogEntry.FromSearchHit(h, _cache)).ToList();
         }
-        catch (FlurlHttpException)
+        catch (FlurlHttpException ex)
         {
-            // TODO: handle
+            Logger.LogError(ex, "Failed to execute search query");
+            // TODO: handle in UI
         }
     }
 

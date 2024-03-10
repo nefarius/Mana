@@ -20,7 +20,8 @@ public static class SearchQuery
                     ""range"": {{
                         ""@timestamp"": {{
                             ""gte"": ""{from.Value.ToUniversalTime():yyyy-MM-ddTHH:mm:ssK}"",
-                            ""lt"": ""{to.Value.ToUniversalTime():yyyy-MM-ddTHH:mm:ssK}""
+                            ""lt"": ""{to.Value.ToUniversalTime():yyyy-MM-ddTHH:mm:ssK}"",                            
+                            ""format"": ""2006-01-02T15:04:05Z07:00""
                         }}
                     }}
                 }},
