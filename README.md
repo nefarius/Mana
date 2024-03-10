@@ -31,3 +31,4 @@ Look in the [example](../../tree/master/Example) directory for a configuration t
 - [Brings xterm.js to Blazor](https://github.com/BattlefieldDuck/XtermBlazor)
 - [ANSI Color Codes](https://talyian.github.io/ansicolors/)
 - [How-to: Use ANSI colors in the terminal](https://ss64.com/nt/syntax-ansi.html)
+- [Refit](https://github.com/reactiveui/refit)
