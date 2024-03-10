@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using Flurl.Http;
 
 using Mana.Models;
 
@@ -8,12 +7,12 @@ using MudBlazor;
 
 using XtermBlazor;
 
+using Range = Mana.Models.Range;
+
 namespace Mana.Pages;
 
 public partial class Logtrail
 {
-    private readonly string[] _addonIds = { "xterm-addon-fit" };
-
     private readonly ColorCache _cache = new();
 
     private readonly TimeSpan _consoleDueTime = TimeSpan.FromSeconds(2);
@@ -22,6 +21,11 @@ public partial class Logtrail
     private readonly TerminalOptions _options = new() { CursorBlink = true, CursorStyle = CursorStyle.Bar, Rows = 38 };
 
     private readonly Dictionary<string, LogEntry> _streamedEventsHistory = new();
+
+    private readonly HashSet<string> _addons =
+    [
+        "addon-fit"
+    ];
 
     private DateRange _dateRange = new(DateTime.Now.AddDays(-1).Date, DateTime.Now.AddDays(1).Date);
 
@@ -63,7 +67,7 @@ public partial class Logtrail
 
     private async Task OnFirstRender()
     {
-        await _terminal.InvokeAddonFunctionVoidAsync("xterm-addon-fit", "fit");
+        await _terminal.Addon("addon-fit").InvokeVoidAsync("fit");
 
         _streamTimer = new Timer(async stateInfo =>
         {
@@ -71,17 +75,30 @@ public partial class Logtrail
             {
                 DateTime now = DateTime.Now;
 
-                string? query =
-                    SearchQuery.BuildQuery(now.Add(-_consolePeriod).AddSeconds(-1), now, newestFirst: false);
-
-                Uri url = new(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
-
                 try
                 {
-                    SearchResult? result = await url
-                        .WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
-                        .PostStringAsync(query)
-                        .ReceiveJson<SearchResult>();
+                    SearchResult? result = await SearchApi.Search(new ZincSearchQuery
+                    {
+                        Query = new Query
+                        {
+                            Bool = new Bool
+                            {
+                                Must =
+                                [
+                                    new Must
+                                    {
+                                        Range = new Range
+                                        {
+                                            Timestamp = new Timestamp
+                                            {
+                                                Gte = now.Add(-_consolePeriod).AddSeconds(-1), Lt = now
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    });
 
                     Dictionary<string, LogEntry> results = result.Hits.Hits
                         .Select(h => LogEntry.FromSearchHit(h, _cache))
@@ -101,7 +118,7 @@ public partial class Logtrail
                         await _terminal.WriteLine(entry.Value.TerminalLine);
                     }
                 }
-                catch (FlurlHttpException ex)
+                catch (Exception ex)
                 {
                     Logger.LogError(ex, "Failed to execute search query");
                     // TODO: handle in UI
@@ -119,20 +136,34 @@ public partial class Logtrail
 
     private async Task LoadResults()
     {
-        string? query = SearchQuery.BuildQuery(_dateRange.Start, _dateRange.End);
-
-        Uri url = new(new Uri(Config.Value.Elastic.ServerUrl), new Uri("/es/_search", UriKind.Relative));
-
         try
         {
-            SearchResult? result = await url
-                .WithBasicAuth(Config.Value.Elastic.Username, Config.Value.Elastic.Password)
-                .PostStringAsync(query)
-                .ReceiveJson<SearchResult>();
+            SearchResult? result = await SearchApi.Search(new ZincSearchQuery
+            {
+                Query = new Query
+                {
+                    Bool = new Bool
+                    {
+                        Must =
+                        [
+                            new Must
+                            {
+                                Range = new Range
+                                {
+                                    Timestamp = new Timestamp
+                                    {
+                                        Gte = _dateRange.Start.Value, Lt = _dateRange.End.Value
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            });
 
             _elements = result.Hits.Hits.Select(h => LogEntry.FromSearchHit(h, _cache)).ToList();
         }
-        catch (FlurlHttpException ex)
+        catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to execute search query");
             // TODO: handle in UI

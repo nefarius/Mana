@@ -26,12 +26,11 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/@@xterm/addon-fit@0.9.0/lib/addon-fit.min.js"></script>
     <script src="_framework/blazor.server.js"></script>
 	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
 	<script src="_content/XtermBlazor/XtermBlazor.min.js"></script>
-    <!-- xterm-addon-fit CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.5.0/lib/xterm-addon-fit.min.js"></script>
 	<!-- Register addon to XtermBlazor -->
-    <script>window.XtermBlazor.registerAddon("xterm-addon-fit", new window.FitAddon.FitAddon());</script>
+    <script>XtermBlazor.registerAddons({"addon-fit": new FitAddon.FitAddon()});</script>
 </body>
 </html>

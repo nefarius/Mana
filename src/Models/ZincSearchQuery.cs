@@ -9,17 +9,10 @@ public class Bool
     public List<Must> Must { get; set; }
 }
 
-public class MatchAll
-{
-}
-
 public class Must
 {
     [JsonPropertyName("range")]
     public Range Range { get; set; }
-
-    [JsonPropertyName("match_all")]
-    public MatchAll MatchAll { get; set; } = new();
 }
 
 public class Query

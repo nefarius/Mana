@@ -5,5 +5,6 @@ namespace Mana.Models.Refit;
 public interface IZincSearchApi
 {
     [Post("/es/_search")]
-    public Task<SearchResult> Search();
+    [Headers("Content-Type: application/json")]
+    public Task<SearchResult> Search(ZincSearchQuery query);
 }
