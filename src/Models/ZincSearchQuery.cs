@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.Metrics;
 using System.Text.Json.Serialization;
 
+using Mana.Converters;
+
 namespace Mana.Models;
 
 public class Bool
@@ -45,9 +47,11 @@ public class ZincSearchQuery
 public class Timestamp
 {
     [JsonPropertyName("gte")]
+    [JsonConverter(typeof(DateTimeRfc3339Converter))]
     public DateTime Gte { get; set; }
 
     [JsonPropertyName("lt")]
+    [JsonConverter(typeof(DateTimeRfc3339Converter))]
     public DateTime Lt { get; set; }
 
     [JsonPropertyName("format")]
