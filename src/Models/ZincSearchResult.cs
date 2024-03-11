@@ -59,7 +59,7 @@ public sealed class HitMeta
     public int MaxScore { get; set; }
 
     [JsonPropertyName("hits")]
-    public List<Hit> Hits { get; } = new();
+    public List<Hit> Hits { get; set; } = new();
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
