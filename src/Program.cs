@@ -17,9 +17,6 @@ using MudBlazor.Services;
 
 using Nefarius.Utilities.AspNetCore;
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-
 using Refit;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args).Setup( /*options =>
@@ -52,15 +49,11 @@ builder.Services.AddMudServices();
 
 builder.Services.AddOptions<ManaConfiguration>().Bind(builder.Configuration.GetSection("Mana"));
 
-builder.Services.AddRefitClient<IZincSearchApi>(new RefitSettings(
-        new NewtonsoftJsonContentSerializer(new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver()
-        })))
+builder.Services.AddRefitClient<IZincSearchApi>()
     .ConfigureHttpClient(client =>
     {
         ManaConfiguration appConfig = builder.Configuration.GetSection("Mana").Get<ManaConfiguration>();
-
+        
         client.BaseAddress = new Uri(appConfig.Elastic.ServerUrl);
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic",
             Convert.ToBase64String(
