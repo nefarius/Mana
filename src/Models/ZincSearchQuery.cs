@@ -1,59 +1,58 @@
-﻿using System.Diagnostics.Metrics;
-using System.Text.Json.Serialization;
+﻿using Mana.Converters;
 
-using Mana.Converters;
+using Newtonsoft.Json;
 
 namespace Mana.Models;
 
 public class Bool
 {
-    [JsonPropertyName("must")]
+    [JsonProperty("must")]
     public List<Must> Must { get; set; }
 }
 
 public class Must
 {
-    [JsonPropertyName("range")]
+    [JsonProperty("range")]
     public Range Range { get; set; }
 }
 
 public class Query
 {
-    [JsonPropertyName("bool")]
+    [JsonProperty("bool")]
     public Bool Bool { get; set; }
 }
 
 public class Range
 {
-    [JsonPropertyName("@timestamp")]
+    [JsonProperty("@timestamp")]
     public Timestamp Timestamp { get; set; }
 }
 
 public class ZincSearchQuery
 {
-    [JsonPropertyName("query")]
+    [JsonProperty("query")]
     public Query Query { get; set; }
 
-    [JsonPropertyName("sort")]
+    [JsonProperty("sort")]
     public List<string> Sort { get; set; } = ["-@timestamp"];
 
-    [JsonPropertyName("from")]
-    public int From { get; set; } = 0;
+    [JsonProperty("from")]
+    public int From { get; set; }
 
-    [JsonPropertyName("size")]
+    [JsonProperty("size")]
     public int Size { get; set; } = 100;
 }
 
 public class Timestamp
 {
-    [JsonPropertyName("gte")]
-    [JsonConverter(typeof(DateTimeRfc3339Converter))]
+    [JsonProperty("gte")]
+    [System.Text.Json.Serialization.JsonConverter(typeof(DateTimeRfc3339Converter))]
     public DateTime Gte { get; set; }
 
-    [JsonPropertyName("lt")]
-    [JsonConverter(typeof(DateTimeRfc3339Converter))]
+    [JsonProperty("lt")]
+    [System.Text.Json.Serialization.JsonConverter(typeof(DateTimeRfc3339Converter))]
     public DateTime Lt { get; set; }
 
-    [JsonPropertyName("format")]
+    [JsonProperty("format")]
     public string Format { get; set; } = "2006-01-02T15:04:05Z07:00";
 }

@@ -1,130 +1,131 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
 
 namespace Mana.Models;
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Aggregations
 {
-    [JsonPropertyName("histogram")]
+    [JsonProperty("histogram")]
     public Histogram Histogram { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Bucket
 {
-    [JsonPropertyName("doc_count")]
+    [JsonProperty("doc_count")]
     public int DocCount { get; set; }
 
-    [JsonPropertyName("key")]
+    [JsonProperty("key")]
     public DateTime Key { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Histogram
 {
-    [JsonPropertyName("buckets")]
+    [JsonProperty("buckets")]
     public List<Bucket> Buckets { get; } = new();
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Hit
 {
-    [JsonPropertyName("_index")]
+    [JsonProperty("_index")]
     public string Index { get; set; }
 
-    [JsonPropertyName("_type")]
+    [JsonProperty("_type")]
     public string Type { get; set; }
 
-    [JsonPropertyName("_id")]
+    [JsonProperty("_id")]
     public string Id { get; set; }
 
-    [JsonPropertyName("_score")]
+    [JsonProperty("_score")]
     public int Score { get; set; }
 
-    [JsonPropertyName("@timestamp")]
+    [JsonProperty("@timestamp")]
     public DateTime Timestamp { get; set; }
 
-    [JsonPropertyName("_source")]
+    [JsonProperty("_source")]
     public SourceEntry Source { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class HitMeta
 {
-    [JsonPropertyName("total")]
+    [JsonProperty("total")]
     public Total Total { get; set; }
 
-    [JsonPropertyName("max_score")]
+    [JsonProperty("max_score")]
     public int MaxScore { get; set; }
 
-    [JsonPropertyName("hits")]
-    public List<Hit> Hits { get; } = new();
+    [JsonProperty("hits")]
+    public List<Hit> Hits { get; set; } = new();
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class SearchResult
 {
-    [JsonPropertyName("took")]
+    [JsonProperty("took")]
     public int Took { get; set; }
 
-    [JsonPropertyName("timed_out")]
+    [JsonProperty("timed_out")]
     public bool TimedOut { get; set; }
 
-    [JsonPropertyName("_shards")]
+    [JsonProperty("_shards")]
     public Shards Shards { get; set; }
 
-    [JsonPropertyName("hits")]
+    [JsonProperty("hits")]
     public HitMeta Hits { get; set; }
 
-    [JsonPropertyName("aggregations")]
+    [JsonProperty("aggregations")]
     public Aggregations Aggregations { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Shards
 {
-    [JsonPropertyName("total")]
+    [JsonProperty("total")]
     public int Total { get; set; }
 
-    [JsonPropertyName("successful")]
+    [JsonProperty("successful")]
     public int Successful { get; set; }
 
-    [JsonPropertyName("skipped")]
+    [JsonProperty("skipped")]
     public int Skipped { get; set; }
 
-    [JsonPropertyName("failed")]
+    [JsonProperty("failed")]
     public int Failed { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class SourceEntry
 {
-    [JsonPropertyName("@log_name")]
+    [JsonProperty("@log_name")]
     public string LogName { get; set; }
 
-    [JsonPropertyName("message")]
+    [JsonProperty("message")]
     public string Message { get; set; }
 
-    [JsonPropertyName("worker")]
+    [JsonProperty("worker")]
     public int Worker { get; set; }
 
-    [JsonPropertyName("container_id")]
+    [JsonProperty("container_id")]
     public string ContainerId { get; set; }
 
-    [JsonPropertyName("container_name")]
+    [JsonProperty("container_name")]
     public string ContainerName { get; set; }
 
-    [JsonPropertyName("log")]
+    [JsonProperty("log")]
     public string Log { get; set; }
 
-    [JsonPropertyName("source")]
+    [JsonProperty("source")]
     public string Source { get; set; }
 }
 
 [SuppressMessage("ReSharper", "ClassNeverInstantiated.Global")]
 public sealed class Total
 {
-    [JsonPropertyName("value")]
+    [JsonProperty("value")]
     public int Value { get; set; }
 }

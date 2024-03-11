@@ -17,24 +17,30 @@
     </MudTabPanel>
 
     <MudTabPanel Text="Browse Data">
-        <MudPaper Elevation="25">
-            <MudToolBar>
-                <MudSpacer/>
-                <MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange"/>
-                <MudToggleIconButton @bind-Toggled="@AutoRefresh"
-                                     Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
-                                     ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On"/>
-                <span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
-                <MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh"/>
-            </MudToolBar>
-        </MudPaper>
-        <MudDataGrid T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
-            <Columns>
-                <Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
-                <Column T="LogEntry" Field="LoggerName" Title="Logger"/>
-                <Column T="LogEntry" Field="Level" Title="Level"/>
-                <Column T="LogEntry" Field="Message" Title="Message"/>
-            </Columns>
-        </MudDataGrid>
+        <MudGrid>
+            <MudItem>
+                <MudPaper Elevation="25">
+                    <MudToolBar>
+                        <MudDateRangePicker Label="Filter date range" @bind-DateRange="_dateRange"/>
+                        <MudToggleIconButton @bind-Toggled="@AutoRefresh"
+                                             Icon="@Icons.Material.Filled.CheckCircle" Color="@Color.Default" Title="Off"
+                                             ToggledIcon="@Icons.Material.Filled.CheckCircle" ToggledColor="@Color.Success" ToggledTitle="On"/>
+                        <span>Auto-refresh is @(AutoRefresh ? "On" : "Off")</span>
+                        <MudIconButton Icon="@Icons.Material.Outlined.Refresh" OnClick="Refresh"/>
+                        <MudSpacer/>
+                    </MudToolBar>
+                </MudPaper>
+            </MudItem>
+            <MudItem>
+                <MudDataGrid Height="300" T="LogEntry" Items="@_elements" Filterable="true" ReadOnly="true" Dense="true" HorizontalScrollbar="true">
+                    <Columns>
+                        <Column T="LogEntry" Field="Timestamp" Title="Timestamp" StickyLeft="true"/>
+                        <Column T="LogEntry" Field="LoggerName" Title="Logger"/>
+                        <Column T="LogEntry" Field="Level" Title="Level"/>
+                        <Column T="LogEntry" Field="Message" Title="Message"/>
+                    </Columns>
+                </MudDataGrid>
+            </MudItem>
+        </MudGrid>
     </MudTabPanel>
 </MudTabs>
