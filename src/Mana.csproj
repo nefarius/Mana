@@ -14,7 +14,7 @@
     <PackageReference Include="MudBlazor" Version="6.19.1" />
     <PackageReference Include="Nefarius.Utilities.AspNetCore" Version="2.3.0" />
     <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
-    <PackageReference Include="XtermBlazor" Version="2.0.0" />
+    <PackageReference Include="XtermBlazor" Version="2.1.0" />
   </ItemGroup>
 
 </Project>
